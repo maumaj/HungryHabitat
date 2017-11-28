@@ -1,7 +1,6 @@
 import pygame 
 import random
 import numpy as np
-import screen_tools as st
 import random
 
 pygame.init()
@@ -12,9 +11,21 @@ cat = pygame.image.load('cat.png')
 position = cat.get_rect()
 position = position.move(0,0)
 
+def grass_background(screen, seed):
+	
+	random.seed(seed)	
+
+	for i in range(0,800,50):
+		for j in range(0,800,50):
+			r_color = 0 + random.randint(0,60)
+			g_color = 60 + random.randint(0,50)
+			b_color = 0 + random.randint(0,60)
+			pygame.draw.rect(screen, (r_color, g_color, b_color),
+				 pygame.Rect(i,j,50,50))
+
 while not done:
 	for event in pygame.event.get():
-		st.grass_background(screen,0)
+		grass_background(screen,0)
 		position = position.move(1,0)
 		screen.blit(cat,position)
 		if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
