@@ -130,23 +130,34 @@ pygame.init()
 screen = pygame.display.set_mode((800,800))
 done = False
 
-for i in range(0,800,40):
-	for j in range(0,800,40):
-		r_color = 0 + random.randint(0,60)
-		g_color = 60 + random.randint(0,50)
-		b_color = 0 + random.randint(0,60)
-		pygame.draw.rect(screen, (r_color, g_color, b_color),
-				pygame.Rect(i,j,40,40))
+def draw_background():
+	for i in range(0,800,40):
+		for j in range(0,800,40):
+			r_color = 0 + random.randint(0,60)
+			g_color = 60 + random.randint(0,50)
+			b_color = 0 + random.randint(0,60)
+			pygame.draw.rect(screen, (0,60,0),
+					pygame.Rect(i,j,40,40))
 
 while not done:
 	for event in pygame.event.get():
-
-		if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and ((current_t<time_tot)):
+		for p in range(1):
+			draw_background()
 			current_t+=+dt
 			for i in characters:
 				i.update()
-				pygame.draw.rect(screen,(random.randint(40,100),0,0),pygame.Rect(i.x * 40,i.y * 40,40,40))
+				color = (0,0,0)
+				if type(i) == Prey:
+					color = (0,0,100,50)
+				elif type(i) == Predator:
+					color = (100,0,0,50)
+				elif type(i) == Plant:
+					color = (100,0,100,50)
+				pygame.draw.rect(screen,(color),pygame.Rect(i.x * 40,i.y * 40,40,40))
 				pygame.display.update()
+
+		if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and ((current_t<time_tot)):
+			pass
 		if event.type == pygame.QUIT:
 			done = True
 		pygame.display.update()
