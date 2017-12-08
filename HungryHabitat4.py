@@ -5,16 +5,19 @@ Created on Thu Nov 30 13:01:01 2017
 @author: mauletj
 """
 
-import random
-import pygame
+import random, pygame, time
 
-#Just some ideas on implementation of simulation
-#very object oriented. we could go other directions
+
 BOARD_W, BOARD_H = 20, 20
 board = [[[] for x in range(BOARD_W)] for y in range(BOARD_H)]
 
 #chance that a plant grows a new plant nearby
 PLANT_REPRO = 0.01
+#time between window updates
+wait_time=0.3
+
+prey_eat_chance=0.0
+pred_repro=0.9
 
 class Plant(object):
 	"""
@@ -61,6 +64,8 @@ class Prey(object):
 		#character dies if food count has run to 0
 		if (self.count <= 0):
 			characters.remove(self)
+			if(self in board[self.x][self.y]):
+				board[self.x][self.y].remove(self)
 			return
 
 		#random movement, up/down/left/right/diagonal
@@ -71,16 +76,19 @@ class Prey(object):
 		if (len(board[self.x][self.y]) > 0):
 			for u in (board[self.x][self.y]):
 				if type(u) == Predator:
-					print('prey eaten')
+					if(random.random() >prey_eat_chance):
+					#print('prey eaten')
 
 					#prey character eaten
-					characters.remove(self)
-					u.count == 300
+						characters.remove(self)
+					
+					#board[self.x][self.y].remove(self)
+						u.count = 300
 
-					return
+						return
 
 				elif type(u) == Plant:
-					print('prey eat plant')
+					#print('prey eat plant')
 
 					#remove plant
 					board[self.x][self.y].remove(u)
@@ -142,17 +150,18 @@ class Predator(object):
 				if (len(board[self.x][self.y]) > 0):
 					for u in (board[self.x][self.y]):
 						if type(u) == Prey:
+							if  random.random() > prey_eat_chance:
 
 							#eat prey, restore food
-							board[self.x][self.y].remove(u)
-							characters.remove(u)
-							board[self.x][self.y].append(self)
-							self.count = 300
+								board[self.x][self.y].remove(u)
+								characters.remove(u)
+								board[self.x][self.y].append(self)
+								self.count = 300
 
-							return
+								return
 
 						elif type(u) == Predator:
-							print('endless')
+							#print('endless')
 							board[self.x][self.y].append(self)
 							self.count -= 1
 							if (random.random() > self.repro) and (self.count > 200):
@@ -181,25 +190,24 @@ current_t=0
 #plant_locations = []
 
 def char_migration(plant_no, prey_no, predator_no):
-	for i in range(plant_no): #plant=1
+	for i in range(plant_no): 
 		x=random.randint(0, 19)
 		y=random.randint(0, 19)
-		#plant_locations.append((x,y))
 		plant=Plant(x,y)
 		characters.append(plant)
 		board[x][y].append(plant)
 
-	for i in range(prey_no): #prey =2
+	for i in range(prey_no): 
 			x=random.randint(0, 19)
 			y=random.randint(0, 19)
 			prey=Prey(x,y,0.7)
 			characters.append(prey)
 			board[x][y].append(prey)
 
-	for i in range(predator_no):#predator =3
+	for i in range(predator_no):
 			x=random.randint(0, 19)
 			y=random.randint(0, 19)
-			predator=Predator(x,y,.9)
+			predator=Predator(x,y,pred_repro)
 			characters.append(predator)
 			board[x][y].append(predator)
 
@@ -226,27 +234,61 @@ def draw_background():
 plant_countdown = 10
 char_migration(45,30,3)
 
+#Setup pygame inputs
+pygame.event.set_allowed(None)
+pygame.event.set_allowed(pygame.KEYDOWN)
+pygame.event.set_allowed(pygame.KEYUP)
 
-while not done:
+while (current_t<time_tot):
+	pygame.event.post(pygame.event.Event(pygame.KEYUP))
+	time.sleep(wait_time)
 	for event in pygame.event.get():
-		"""plant_countdown = max(plant_countdown-1,0)
-		if plant_countdown == 0:
-			for l in plant_locations:
-				if(len(board[l[0]][l[1]])==0) and (random.randint(0,1000)>900):
-					print('plant regrowing')
-					#plant = Plant(l[0],l[1])
-					#board[plant.x][plant.y].append(plant)
-					#characters.append(plant)
-				else:
-					plant_countdown = 10
-			plant_locations = []
-			plant_countdown = 10"""
-
 		screen.blit(background,(0,0))
 		current_t+=+dt
 
 		if(current_t % 100 == 0):
-			char_migration(5,6,2)
+			char_migration(5,6,0)
+		if event.type == pygame.KEYDOWN:
+			if(event.key == pygame.K_q):
+				x=random.randint(0, 19)
+                        	y=random.randint(0, 19)
+                        	prey=Prey(x,y,0.7)
+                        	characters.append(prey)
+                        	board[x][y].append(prey)
+				print(prey.count,"chicken added")
+			if(event.key == pygame.K_w):
+				x=random.randint(0, 19)
+                        	y=random.randint(0, 19)
+                        	predator=Predator(x,y,pred_repro)
+                        	characters.append(predator)
+                        	board[x][y].append(predator)
+				print("cat added")
+			if(event.key == pygame.K_e):
+				x=random.randint(0, 19)
+                        	y=random.randint(0, 19)
+                        	plant=Plant(x,y)
+                        	characters.append(plant)
+                         	board[x][y].append(plant)
+				print("plant added")
+			if(event.key ==pygame.K_a):
+				for i in characters:
+					if(type(i)==Prey):
+						i.count=0
+						break
+				print("chicken removed")
+                        if(event.key ==pygame.K_s):
+                                for i in characters:
+                                        if(type(i)==Predator):
+                                                i.count=0
+                                                break
+                                print("cat removed")
+                        if(event.key ==pygame.K_d):
+                                for i in characters:
+                                        if(type(i)==Plant):
+                                                i.count=0
+                                                break
+                                print("plant removed")
+
 
 		for i in characters:
 			i.update()
@@ -259,14 +301,9 @@ while not done:
 					screen.blit(plant_img, (i.x * 40,i.y * 40))
 		pygame.display.update()
 
-		if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and ((current_t<time_tot)):
-			pass
+
 		if event.type == pygame.QUIT:
 			done = True
 		pygame.display.update()
 		pygame.display.flip()
 
-"""endnum = 0
-for j in range(20):
-	print(board[j])
-print (endnum)"""
