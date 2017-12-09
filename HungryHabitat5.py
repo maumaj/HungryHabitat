@@ -15,11 +15,11 @@ board = [[[] for x in range(BOARD_W)] for y in range(BOARD_H)]
 #chance that a plant grows a new plant nearby
 PLANT_REPRO = 0.01
 #time between window updates
-wait_time=0.0
+wait_time=0.01
 
-prey_eat_chance=0.0
-pred_repro=0.9
-prey_repro=0.7
+prey_eat_chance=0.0 #chance to not get eaten
+pred_repro=0.9 #chance to not reproduce
+prey_repro=0.7 #chance to not reproduce
 
 class Plant(object):
 	"""
@@ -29,8 +29,12 @@ class Plant(object):
 	def __init__(self,x,y):
 		self.x=x
 		self.y=y
+		self.dead=False
 
 	def update(self):
+		if(self.dead):
+			characters.remove(self)
+			board[self.x][self.y].remove(self)
 		if (random.randint(0,100) > 100 - (PLANT_REPRO * 100)):
 			#randomly pick a location for new plant related to current plant
 			plant_x = (self.x + random.randint(-2,2))%20
@@ -158,12 +162,12 @@ class Predator(object):
 								board[self.x][self.y].remove(u)
 								characters.remove(u)
 								board[self.x][self.y].append(self)
-								self.count = 300
+								self.count = 220
 
 								return
 
 						elif type(u) == Predator:
-							#print('endless')
+							
 							board[self.x][self.y].append(self)
 							self.count -= 1
 							if (random.random() > self.repro) and (self.count > 200):
@@ -237,7 +241,7 @@ pygame.event.set_allowed(None)
 pygame.event.set_allowed(pygame.KEYDOWN)
 pygame.event.set_allowed(pygame.KEYUP)
 
-def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,plant_repro=0.01,pred_repro=0.9,prey_repro=0.7):
+def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,freeplay=False):
 	#initial migration
 	char_migration(init_plant,init_prey,init_pred)
 	#time parameters
@@ -262,14 +266,14 @@ def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,plant_
 			if(current_t % 100 == 0):
 				char_migration(mig_plant,mig_prey,mig_pred)
 		#adding and removing characters during run
-			if event.type == pygame.KEYDOWN:
+			if event.type == pygame.KEYDOWN and freeplay:
 				if(event.key == pygame.K_q):
 					x=random.randint(0, 19)
 					y=random.randint(0, 19)
 					prey=Prey(x,y,prey_repro)
 					characters.append(prey)
 					board[x][y].append(prey)
-					print(prey.count,"chicken added")
+					print("chicken added")
 				if(event.key == pygame.K_w):
 					x=random.randint(0, 19)
 					y=random.randint(0, 19)
@@ -288,20 +292,20 @@ def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,plant_
 					for i in characters:
 						if(type(i)==Prey):
 							i.count=0
+							print("chicken removed")
 							break
-					print("chicken removed")
-					if(event.key ==pygame.K_s):
-						for i in characters:
-							if(type(i)==Predator):
-								i.count=0
-								break
+				if(event.key ==pygame.K_s):
+					for i in characters:
+						if(type(i)==Predator):
+							i.count=0
 							print("cat removed")
-						if(event.key ==pygame.K_d):
-							for i in characters:
-								if(type(i)==Plant):
-									i.count=0
-									break
-									print("plant removed")
+							break
+				if(event.key ==pygame.K_d):
+					for i in characters:
+						if(type(i)==Plant):
+							i.dead=True
+							print("plant removed")
+							break
 		#updating characters and screen
 
 			count_prey = 0
@@ -360,4 +364,20 @@ def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,plant_
 
 	plt.show()
 
-simulation(45,30,0,8,0,0)
+#Chicken Carry capacity
+#simulation(45,30,0,8,0,0)
+
+#Introduction of predators
+#simulation(45,30,0,3,0,3)
+
+#Cat carrying capacity (unfinished)
+#simulation(0,20,10,0,8,0)
+
+#Drought
+#simulation(70,30,3,0,0,0)
+
+#Chicken Explosion
+#simulation(60,0,0,0,2,0)
+
+#free-play
+#simulation(0,0,0,0,0,0,freeplay=True)
