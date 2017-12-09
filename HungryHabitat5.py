@@ -242,7 +242,7 @@ def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,plant_
 	char_migration(init_plant,init_prey,init_pred)
 	#time parameters
 	current_t=0
-	time_tot=100
+	time_tot=1000
 	dt=1
 
 	#count arrays
@@ -331,21 +331,33 @@ def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,plant_
 			pygame.display.update()
 			pygame.display.flip()
 
-	plt.subplot(6, 1, 1)
-	plt.bar(np.arange(len(prey_array)),prey_array, color ='blue',alpha=0.5)
+	plt.subplot(4, 1, 1)
+	plt.plot(np.arange(len(prey_array)),np.asarray(prey_array), color ='blue',alpha=0.5)
 	plt.title('Prey Count')
+	plt.ylim(0,np.asarray(prey_array).max()+5)
 	plt.savefig('prey_c.png')
 
-	plt.subplot(6, 1, 3)
-	plt.bar(np.arange(len(pred_array)),pred_array, color='purple',alpha=0.5)
+	plt.subplot(4, 1, 2)
+	plt.plot(np.arange(len(pred_array)),pred_array, color='purple',alpha=0.5)
 	plt.title('Predator Count')
+	plt.ylim(0,np.asarray(pred_array).max()+5)
 	plt.savefig('pred_c.png')
 
-	plt.subplot(6, 1, 5)
-	plt.bar(np.arange(len(plant_array)),plant_array, color='green',alpha=0.5)
+	plt.subplot(4, 1, 3)
+	plt.plot(np.arange(len(plant_array)),plant_array, color='green',alpha=0.5)
 	plt.title('Plant Count')
+	plt.ylim(0,np.asarray(plant_array).max()+5)
 	plt.savefig('plant_c.png')
+
+	plt.subplot(4, 1, 4)
+	plt.plot(np.arange(len(prey_array)),np.asarray(prey_array), color ='blue',alpha=0.5)
+	plt.plot(np.arange(len(pred_array)),pred_array, color='purple',alpha=0.5)	
+	plt.plot(np.arange(len(plant_array)),plant_array, color='green',alpha=0.5)
+	plt.title('Total Count')
+	plt.ylim(0,max(np.asarray(plant_array).max()+5,np.asarray(pred_array).max()+5,np.asarray(prey_array).max()+5))
+	plt.savefig('plant_c.png')
+
 
 	plt.show()
 
-simulation(45,30,3,0,0,0)
+simulation(45,30,0,8,0,0)
