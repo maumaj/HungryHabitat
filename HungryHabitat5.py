@@ -5,7 +5,7 @@ Created on Thu Nov 30 13:01:01 2017
 @author: mauletj
 """
 
-import random, pygame, time
+import random, pygame, time, sys
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -364,20 +364,69 @@ def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,freepl
 
 	plt.show()
 
+print("           Welcome to Hungry Habitat!          ")
+print("-----------------------------------------------")
+print("This is a tool developed to help teach children")
+print("basic ecological and mathematical concepts     ")
+print("through simulations of predator/prey/plant     ")
+print("scenarios that are easy to understand, visually")
+print("interesting and most importantly fun!          ")
+print()
+print("---------------------------------------------------")
+print("There are currently six simulations to choose from ")
+print("1: Chicken carrying capacity   ")
+print("2: Introduction of predators   ")
+print("3: Cat carrying capacity       ")
+print("4: Drought                     ")
+print("5: Chicken population Explosion")
+print("6: Free-play                   ")
+print("In free play you can design your own simulation")
+print("adding characters with the Q,W and E keys, and ")
+print("removing characters with the A, S and D keys")
+print()
+print("--------------------------------------------------")
+#Program loop, exits with sys.exit()
+while True:
+	#reset
+	board = [[[] for x in range(BOARD_W)] for y in range(BOARD_H)]
+	characters=[]
+	#Input Validation of num between 0 and 6
+	while True:
+		value= input("Please enter the number for the \nsimulation you'd like to see: (enter 0 to quit) ")
+		try:
+			sim_num= int(value)
+		except ValueError:
+			print ("\nRemember to enter a number between 0 and 6 \n")
+			continue
+		if ( sim_num>-1 and sim_num<7):
+			break
+		else:
+			print("\nRemember to enter a number between 0 and 6 \n")
+#exit app
+	if(sim_num==0):
+		print("Thanks for using Hungry Habitat!")
+		sys.exit()
+
 #Chicken Carry capacity
-#simulation(45,30,0,8,0,0)
+	if(sim_num==1):
+		simulation(45,30,0,8,0,0)
 
 #Introduction of predators
-#simulation(45,30,0,3,0,3)
+	if(sim_num==2):
+		simulation(45,30,0,1,0,3)
 
-#Cat carrying capacity (unfinished)
-#simulation(0,20,10,0,8,0)
+#Cat carrying capacity
+	if(sim_num==3):
+		simulation(0,20,10,0,8,0)
 
 #Drought
-#simulation(70,30,3,0,0,0)
+	if(sim_num==4):
+		simulation(50,30,3,0,0,0)
 
 #Chicken Explosion
-#simulation(60,0,0,0,2,0)
+	if(sim_num==5):
+		simulation(60,0,0,0,2,0)
 
 #free-play
-#simulation(0,0,0,0,0,0,freeplay=True)
+	if(sim_num==6):
+		simulation(0,0,0,0,0,0,freeplay=True)
