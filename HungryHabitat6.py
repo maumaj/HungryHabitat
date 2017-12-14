@@ -12,6 +12,8 @@ import numpy as np
 BOARD_W, BOARD_H = 20, 20
 board = [[[] for x in range(BOARD_W)] for y in range(BOARD_H)]
 
+characters = [] #stores all plant/predator/prey objects
+
 #chance that a plant grows a new plant nearby
 PLANT_REPRO = 0.01
 #time between window updates
@@ -93,12 +95,9 @@ class Prey(object):
 			for u in (board[self.x][self.y]):
 				if type(u) == Predator:
 					if(random.random() >prey_eat_chance):
-					#print('prey eaten')
 
 					#prey character eaten
 						characters.remove(self)
-
-					#board[self.x][self.y].remove(self)
 						u.count = 300
 
 						return
@@ -112,7 +111,6 @@ class Prey(object):
 
 					#allow plants to regrow in same location
 					plant_countdown = 25
-					#plant_locations.append((self.x,self.y))
 
 					#update prey object
 					self.count = 300
@@ -205,11 +203,6 @@ class Predator(object):
 					return
 
 
-characters=[]
-
-#randomly initalize 10 plants, 5 prey, 2 predators
-#plant_locations = []
-
 def char_migration(plant_no, prey_no, predator_no):
 	"""
 	Initializes and places a given number of plant, prey, predator objects
@@ -255,6 +248,7 @@ pygame.event.set_allowed(pygame.KEYUP)
 def simulation(init_plant,init_prey,init_pred,mig_plant,mig_prey,mig_pred,freeplay=False):
 	#initial migration
 	char_migration(init_plant,init_prey,init_pred)
+
 	#time parameters
 	current_t=0
 	time_tot=1000
